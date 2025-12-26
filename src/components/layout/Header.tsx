@@ -1,8 +1,16 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Menu, X, GraduationCap, ChevronDown } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Menu, X, GraduationCap, User, LogOut } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -17,6 +25,13 @@ const navItems = [
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut, isLoading } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
@@ -56,9 +71,48 @@ export function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-3">
-            <Button variant="ghost" asChild>
-              <Link to="/login">Sign In</Link>
-            </Button>
+            {!isLoading && (
+              <>
+                {user ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="gap-2">
+                        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                          <User className="w-4 h-4 text-primary-foreground" />
+                        </div>
+                        <span className="max-w-[120px] truncate">
+                          {user.user_metadata?.full_name || user.email?.split("@")[0]}
+                        </span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem asChild>
+                        <Link to="/dashboard" className="cursor-pointer">
+                          My Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/orders" className="cursor-pointer">
+                          My Orders
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={handleSignOut}
+                        className="cursor-pointer text-destructive"
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Sign Out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Button variant="ghost" asChild>
+                    <Link to="/login">Sign In</Link>
+                  </Button>
+                )}
+              </>
+            )}
             <Button variant="hero" asChild>
               <Link to="/book">Book Now</Link>
             </Button>
@@ -104,9 +158,21 @@ export function Header() {
                 </Link>
               ))}
               <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
-                <Button variant="outline" asChild className="w-full">
-                  <Link to="/login">Sign In</Link>
-                </Button>
+                {user ? (
+                  <>
+                    <div className="px-4 py-2 text-sm text-muted-foreground">
+                      Signed in as {user.email}
+                    </div>
+                    <Button variant="outline" onClick={handleSignOut} className="w-full">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <Button variant="outline" asChild className="w-full">
+                    <Link to="/login">Sign In</Link>
+                  </Button>
+                )}
                 <Button variant="hero" asChild className="w-full">
                   <Link to="/book">Book Now</Link>
                 </Button>
