@@ -1,13 +1,33 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Helmet } from "react-helmet-async";
+import { Layout } from "@/components/layout/Layout";
+import { HeroSection } from "@/components/home/HeroSection";
+import { HowItWorksSection } from "@/components/home/HowItWorksSection";
+import { ServicesSection } from "@/components/home/ServicesSection";
+import { TestimonialsSection } from "@/components/home/TestimonialsSection";
+import { CTASection } from "@/components/home/CTASection";
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <>
+      <Helmet>
+        <title>TEMADIPLOME.CE | Professional Academic Assistance Services</title>
+        <meta
+          name="description"
+          content="Get expert help with your thesis, research papers, and assignments. Professional academic assistance with on-time delivery and quality guarantee."
+        />
+        <meta
+          name="keywords"
+          content="thesis writing, academic assistance, bachelor thesis, master thesis, research paper, coursework help, Albania"
+        />
+      </Helmet>
+      <Layout>
+        <HeroSection />
+        <HowItWorksSection />
+        <ServicesSection />
+        <TestimonialsSection />
+        <CTASection />
+      </Layout>
+    </>
   );
 };
 
