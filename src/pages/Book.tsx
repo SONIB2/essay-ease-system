@@ -68,6 +68,33 @@ const steps = [
   { id: 6, title: "Checkout", icon: CreditCard },
 ];
 
+const paymentMethods = [
+  {
+    id: "moneygram",
+    label: "MoneyGram",
+    description: "Send payment via MoneyGram",
+    icon: "💵",
+  },
+  {
+    id: "western-union",
+    label: "Western Union",
+    description: "Send payment via Western Union",
+    icon: "💸",
+  },
+  {
+    id: "ria",
+    label: "RIA Money Transfer",
+    description: "Send payment via RIA",
+    icon: "💳",
+  },
+  {
+    id: "bank-transfer",
+    label: "Bank Transfer",
+    description: "Direct bank account transfer",
+    icon: "🏦",
+  },
+];
+
 interface FormData {
   // Step 1
   serviceType: string;
@@ -97,6 +124,7 @@ interface FormData {
   name: string;
   email: string;
   phone: string;
+  paymentMethod: string;
   acceptTerms: boolean;
   acceptPrivacy: boolean;
 }
@@ -128,6 +156,7 @@ const Book = () => {
     name: "",
     email: "",
     phone: "",
+    paymentMethod: "",
     acceptTerms: false,
     acceptPrivacy: false,
   });
@@ -835,6 +864,51 @@ const Book = () => {
                           </div>
                         </div>
 
+                        {/* Payment Method Selection */}
+                        <div className="space-y-3">
+                          <Label>Payment Method *</Label>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {paymentMethods.map((method) => (
+                              <button
+                                key={method.id}
+                                type="button"
+                                onClick={() => updateFormData("paymentMethod", method.id)}
+                                className={`flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all ${
+                                  formData.paymentMethod === method.id
+                                    ? "border-secondary bg-secondary/10"
+                                    : "border-border hover:border-secondary/50"
+                                }`}
+                              >
+                                <span className="text-2xl">{method.icon}</span>
+                                <div>
+                                  <p className="font-semibold text-foreground">
+                                    {method.label}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {method.description}
+                                  </p>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                          {formData.paymentMethod && (
+                            <div className="bg-secondary/10 rounded-xl p-4 border border-secondary/30">
+                              <p className="text-sm text-foreground">
+                                <strong>Next Steps:</strong> After placing your order, 
+                                contact us on <strong>WhatsApp</strong> to receive the 
+                                payment details for{" "}
+                                <strong>
+                                  {paymentMethods.find(m => m.id === formData.paymentMethod)?.label}
+                                </strong>.
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-2">
+                                We'll provide the recipient name, location, and any 
+                                required details to complete your payment securely.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
                         {/* Order Summary */}
                         <div className="bg-muted rounded-xl p-6">
                           <h3 className="font-semibold text-foreground mb-4">
@@ -869,6 +943,16 @@ const Book = () => {
                                 }
                               </span>
                             </div>
+                            {formData.paymentMethod && (
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">
+                                  Payment
+                                </span>
+                                <span className="font-medium">
+                                  {paymentMethods.find(m => m.id === formData.paymentMethod)?.label}
+                                </span>
+                              </div>
+                            )}
                             <div className="border-t border-border pt-2 flex justify-between">
                               <span className="font-semibold">Total</span>
                               <span className="text-xl font-bold text-secondary">
@@ -963,7 +1047,7 @@ const Book = () => {
                       variant="hero"
                       size="lg"
                       onClick={handleSubmit}
-                      disabled={!formData.acceptTerms || !formData.acceptPrivacy}
+                      disabled={!formData.acceptTerms || !formData.acceptPrivacy || !formData.paymentMethod}
                     >
                       <CreditCard className="w-4 h-4" />
                       Place Order – €{pricing.total}
